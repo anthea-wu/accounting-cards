@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Cryptography;
 using accounting_cards.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,17 +11,50 @@ namespace accounting_cards.Controllers
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        /// <summary> 登入 </summary>
-        [Route("Post")]
+        /// <summary> 帳號驗證 </summary>
+        [Route("Post/Session")]
         [HttpPost]
-        public IActionResult Login(UserLoginRequestBindingModel login)
+        public IActionResult Check(UserCheckRequestBindingModel check)
         {
-            if (login.Account == "anthea" && login.Password == "123")
+            var result = new UserCheckResponseBindingModel()
             {
-                return Ok("歡迎登入");
+                Account = check.Account,
+                Step = 0
+            };
+            
+            using (var db = new AccountingContext())
+            {
+                var user = db.Users.FirstOrDefault(u => u.account == check.Account);
+                if (user == null)
+                {
+                    var bite = new byte[16];
+                    using (var rngCsp = new RNGCryptoServiceProvider())
+                    {
+                        rngCsp.GetBytes(bite);
+                    }
+                    var salt = Convert.ToBase64String(bite);
+                    
+                    result.Salt = salt;
+                    user = new User()
+                    {
+                        guid = Guid.NewGuid(),
+                        account = check.Account,
+                        temp_key = salt
+                    };
+                    db.Users.Add(user);
+                    db.SaveChanges();
+                }
+                else
+                {
+                    result.Step = 1;
+                }
+                
+                db.Dispose();
             }
-            return BadRequest("登入失敗");
+            
+            return Ok(result);
         }
+
 
         /// <summary> 註冊 </summary>
         [Route("Post/New")]
@@ -32,27 +66,47 @@ namespace accounting_cards.Controllers
             using (var db = new AccountingContext())
             {
                 var user = db.Users.FirstOrDefault(u => u.account == register.Account);
-                if (user != null)
+                if (user == null)
                 {
                     db.Dispose();
-                    return Conflict($"帳號 {register.Account} 已存在");
+                    return BadRequest($"帳號 {register.Account} 的註冊流程不合法");
                 }
 
-                user = new User()
-                {
-                    guid = Guid.NewGuid(),
-                    account = register.Account,
-                    password = register.Password,
-                    name = register.Name,
-                    create_time = DateTimeOffset.Now
-                };
-                db.Users.Add(user);
+                user.account = register.Account;
+                user.password = register.Password;
+                user.name = register.Name;
+                user.create_time = DateTimeOffset.Now;
+                
                 db.SaveChanges();
                 db.Dispose();
             }
             
             return CreatedAtAction(nameof(Register), register);
         }
+
+        /// <summary> 登入 </summary>
+        [Route("Post")]
+        [HttpPost]
+        public IActionResult Login(UserLoginRequestBindingModel login)
+        {
+            if (login.Account == "anthea" && login.Password == "123")
+            {
+                return Ok("歡迎登入");
+            }
+            return BadRequest("登入失敗");
+        }
+    }
+
+    public class UserCheckResponseBindingModel
+    {
+        public string Account { get; set; }
+        public int Step { get; set; }
+        public string Salt { get; set; }
+    }
+
+    public class UserCheckRequestBindingModel
+    {
+        public string Account { get; set; }
     }
 
     public class UserRegisterRequestBindingModel

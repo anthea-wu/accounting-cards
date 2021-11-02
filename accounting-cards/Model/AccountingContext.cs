@@ -22,6 +22,7 @@ namespace accounting_cards.Model
         public string account { get; set; }
         public string password { get; set; }
         public string name { get; set; }
+        public string temp_key { get; set; }
         public DateTimeOffset create_time { get; set; }
     }
 }

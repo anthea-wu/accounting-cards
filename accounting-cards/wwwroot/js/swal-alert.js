@@ -1,10 +1,14 @@
-function alert_success(title, msg) {
+function alert_success(title, msg, reload) {
     Swal.fire({
         icon: 'success',
         title: title,
         text: msg,
         timer: 3000,
         confirmButtonColor: '#28a745',
+    }).then(() => {
+        if (reload){
+            location.reload();
+        }
     })
 }
 

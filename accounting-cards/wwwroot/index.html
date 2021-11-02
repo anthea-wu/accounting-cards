@@ -12,6 +12,14 @@
         .row{
             height: 90vh;
         }
+        
+        .text-black-light{
+            color: #222;
+        }
+        
+        .display-none-form{
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -19,93 +27,34 @@
 <div id="app">
     <div class="container mt-4">
         <div class="row d-flex justify-content-center align-items-center">
-            <div class="col-3">
-                <div class="card border-light">
-                    <div class="card-header bd-red-300">
-                        <h3 class="m-0 d-flex justify-content-center p-2 text-white">記帳卡片</h3>
+            <div class="col-5">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-center p-3 bd-yellow-100">
+                        <h3 class="mb-0 fw-bold text-black-light">歡迎來到記帳卡片</h3>
                     </div>
-                    <div class="card-body">
-                        <form>
-                            <div class="mt-3 mb-3 d-flex justify-content-evenly align-items-center">
-                                <div class="col-3">
-                                    <label for="login-account" class="form-label m-0 d-flex justify-content-center">
-                                        <h5 class="m-0">帳號</h5>
-                                    </label>
-                                </div>
-                                <div class="col-8">
-                                    <input type="text" class="form-control" id="login-account" v-model="user.login.account">
-                                </div>
-                            </div>
-                            <div class="mb-3 d-flex justify-content-evenly align-items-center">
-                                <div class="col-3">
-                                    <label for="login-password" class="form-label m-0 d-flex justify-content-center">
-                                        <h5 class="m-0">密碼</h5>
-                                    </label>
-                                </div>
-                                <div class="col-8">
-                                    <input type="email" class="form-control" id="login-password" v-model="user.login.password">
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-evenly align-items-center mb-3">
-                                <button type="submit" class="btn btn-danger col-4" @click.prevent="login">登入</button>
-                            </div>
+                    <div class="card-body p-4">
+                        <form class="d-flex flex-column align-items-end" id="form-check">
+                            <input type="text" id="account" class="form-control col-12 mb-3" placeholder="請輸入帳號" v-model="user.account">
+                            <button type="button" class="btn btn-sm btn-secondary col-2" @click.prevent="postCheck">繼續</button>
+                        </form>
+                        <form class="d-flex flex-column align-items-end display-none-form" id="form-register">
+                            <label for="register" class="col-12">
+                                <h5 class="mb-0"><span class="fw-bold">{{user.register.account}}</span>　是你想要使用的帳號嗎?</h5>
+                                <p class="form-text">帳號不存在，請確認輸入內容或利用 <span class="fw-bold">{{user.register.account}}</span> 來註冊一個新的帳號</p>
+                            </label>
+                            <input type="text" id="register-password" class="form-control col-12 mb-3" placeholder="請輸入密碼" v-model="user.register.password">
+                            <input type="text" id="register-name" class="form-control col-12 mb-3" placeholder="請輸入暱稱" v-model="user.register.name">
+                            <button type="button" class="btn btn-sm btn-secondary col-2" @click.prevent="postRegister">註冊</button>
+                        </form>
+                        <form class="d-flex flex-column align-items-end display-none-form" id="form-login">
+                            <label for="login" class="col-12">
+                                <h5 class="mb-0"><span class="fw-bold">{{user.login.account}}</span>　歡迎回來！</h5>
+                                <p class="form-text">請繼續登入流程來使用功能</p>
+                            </label>
+                            <input type="text" id="login-password" class="form-control col-12 mb-3" placeholder="請輸入密碼" v-model="user.login.password">
+                            <button type="button" class="btn btn-sm btn-secondary col-2" @click.prevent="postLogin">登入</button>
                         </form>
                     </div>
-                    <div class="card-footer">
-                        <p class="font-monospace d-flex align-items-center mb-0">還沒有帳號?
-                            <button type="button" class="btn btn-secondary btn-sm ms-3" data-bs-toggle="modal" data-bs-target="#register-modal">
-                                註冊
-                            </button>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="modal fade" id="register-modal" tabindex="-1" aria-labelledby="register-modal-label" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="register-modal-label">註冊帳號</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="mt-3 mb-3 d-flex justify-content-evenly align-items-center">
-                            <div class="col-3">
-                                <label for="register-account" class="form-label m-0 d-flex justify-content-center">
-                                    <p class="m-0">帳號</p>
-                                </label>
-                            </div>
-                            <div class="col-8">
-                                <input type="text" class="form-control" id="register-account" placeholder="abc123" v-model="user.register.account">
-                            </div>
-                        </div>
-                        <div class="mb-3 d-flex justify-content-evenly align-items-center">
-                            <div class="col-3">
-                                <label for="register-password" class="form-label m-0 d-flex justify-content-center">
-                                    <p class="m-0">密碼</p>
-                                </label>
-                            </div>
-                            <div class="col-8">
-                                <input type="text" class="form-control" id="register-password" placeholder="qweasdzxc123" v-model="user.register.password">
-                            </div>
-                        </div>
-                        <div class="mb-3 d-flex justify-content-evenly align-items-center">
-                            <div class="col-3">
-                                <label for="register-name" class="form-label m-0 d-flex justify-content-center">
-                                    <p class="m-0">暱稱</p>
-                                </label>
-                            </div>
-                            <div class="col-8">
-                                <input type="text" class="form-control" id="register-name" placeholder="芫荽" v-model="user.register.name">
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-evenly align-items-center mb-3">
-                            <button type="submit" class="btn btn-danger col-4" @click.prevent="register">送出</button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
@@ -130,6 +79,7 @@
         data(){
             return{
                 user:{
+                    account: "",
                     login:{
                         account: "",
                         password: "",
@@ -143,24 +93,39 @@
             }
         },
         methods:{
-            login: function () {
+            postCheck: function () {
                 let vm = this;
                 let data = {
-                    Account: vm.user.login.account,
-                    Password: toSHA256(vm.user.login.password)
+                    Account: vm.user.account,
                 };
                 
                 axios({
                     method: 'post',
-                    url: './api/User/Post',
+                    url: './api/User/Post/Session',
                     data: data
                 }).then(res => {
-                    alert_success(res.data, `嗨！${vm.user.login.account}，很高興看到你回來`);
+                    console.log(res.data);
+                    let step = res.data.step;
+                    let account = res.data.account;
+                    switch (step){
+                        case 0:
+                            vm.user.register.account = account;
+                            $('#form-check').addClass('display-none-form');
+                            $('#form-register').removeClass('display-none-form');
+                            return;
+                        case 1:
+                            vm.user.login.account = account;
+                            $('#form-check').addClass('display-none-form');
+                            $('#form-login').removeClass('display-none-form');
+                            return;    
+                    }
+                    // alert_success(res.data, `嗨！${vm.user.login.account}，很高興看到你回來`);
                 }).catch(err => {
-                    alert_fail(err.response.data, `嘿！${vm.user.login.account}，你可能記錯了帳號或密碼`)
+                    console.log(err.response);
+                    // alert_fail(err.response.data, `嘿！${vm.user.login.account}，你可能記錯了帳號或密碼`)
                 })
             },
-            register: function () {
+            postRegister: function () {
                 let vm = this;
                 let data = {
                     Account: vm.user.register.account,
@@ -173,10 +138,26 @@
                     url: './api/User/Post/New',
                     data: data
                 }).then(res => {
-                    alert_success('註冊成功', `感謝你的註冊！馬上開始使用吧`);
-                    window.location.reload();
+                    alert_success('註冊成功', '感謝你的註冊！重新整理回到登入頁面號馬上開始使用吧', true);
                 }).catch(err => {
                     alert_fail(`ERROR：${err.response.status}`, `嘿！${err.response.data}`)
+                })
+            },
+            postLogin: function () {
+                let vm = this;
+                let data = {
+                    Account: vm.user.login.account,
+                    Password: toSHA256(vm.user.login.password)
+                };
+
+                axios({
+                    method: 'post',
+                    url: './api/User/Post',
+                    data: data
+                }).then(res => {
+                    alert_success(res.data, `嗨！${vm.user.login.account}，很高興看到你回來`, false);
+                }).catch(err => {
+                    alert_fail(err.response.data, `嘿！${vm.user.login.account}，你可能記錯了帳號或密碼`)
                 })
             },
         },
