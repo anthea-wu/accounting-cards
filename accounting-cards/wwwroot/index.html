@@ -95,9 +95,8 @@
                     data: data
                 }).then(res => {
                     alert_success(res.data, `嗨！${vm.user.account}，很高興看到你回來`);
-                    console.log(res.data);
                 }).catch(err => {
-                    console.log(err.response);
+                    alert_fail(err.response.data, `嘿！${vm.user.account}，你可能記錯了帳號或密碼`)
                 })
             }
         },
