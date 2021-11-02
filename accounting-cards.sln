@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "accounting-cards", "accounting-cards\accounting-cards.csproj", "{619D7051-34F1-45AC-ADE7-D72575E247CB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{619D7051-34F1-45AC-ADE7-D72575E247CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{619D7051-34F1-45AC-ADE7-D72575E247CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{619D7051-34F1-45AC-ADE7-D72575E247CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{619D7051-34F1-45AC-ADE7-D72575E247CB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
