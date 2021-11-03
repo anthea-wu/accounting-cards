@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using accounting_cards.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -89,11 +90,31 @@ namespace accounting_cards.Controllers
         [HttpPost]
         public IActionResult Login(UserLoginRequestBindingModel login)
         {
-            if (login.Account == "anthea" && login.Password == "123")
+            using (var db = new AccountingContext())
             {
+                var user = db.Users.FirstOrDefault(u => u.account == login.Account);
+                if (user == null)
+                {
+                    db.Dispose();
+                    return NotFound("登入失敗！帳號或密碼錯誤。");
+                }
+
+                var hashStr = $"salt={user.temp_key}+password={login.Password}";
+
+                var sha256 = SHA256.Create();
+                var originalBytes = UTF8Encoding.Default.GetBytes(hashStr);
+                var encodedBytes = sha256.ComputeHash(originalBytes);
+                var passwordHash = BitConverter.ToString(encodedBytes).Replace("-", "");
+
+                if (passwordHash != user.password)
+                {
+                    db.Dispose();
+                    return BadRequest("登入失敗！帳號或密碼錯誤。");
+                }
+
+                db.Dispose();
                 return Ok("歡迎登入");
             }
-            return BadRequest("登入失敗");
         }
     }
 
