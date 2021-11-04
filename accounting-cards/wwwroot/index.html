@@ -6,23 +6,58 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Abel&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="./css/bootstrap-color.css">
 
     <style>
         html, #app{
-            background: #f0f4f5;
+            font-family: 'Abel', sans-serif;
+            background: var(--swatch-900);
         }
         
         .row{
             height: 90vh;
         }
-        
-        .text-black-light{
-            color: #222;
-        }
-        
+
         .display-none-form{
             display: none !important;
+        }
+                
+        .text-title{
+            color: var(--yellow-600);
+        }
+        
+        .card{
+            background: var(--swatch-100);
+        }
+        
+        .icon-yellow-18{
+            font-size: 1.8rem;
+            color: var(--yellow-600);
+        }
+
+        .button-yellow{
+            background-color: var(--yellow-600);
+            border-color: var(--yellow-600);
+        }
+        
+        .hr-card-body{
+            color: var(--yellow-600);
+            width: 80%;
+        }
+        
+        .required{
+            border: 5px solid var(--yellow-600);
+        }
+        
+        .error-shake{
+            animation: headShake;
+            animation-duration: 0.5s;
         }
     </style>
 </head>
@@ -31,15 +66,23 @@
 <div id="app">
     <div class="container mt-4">
         <div class="row d-flex justify-content-center align-items-center p-0">
-            <div class="col-5">
+            <div class="col-4">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-center p-3 bd-yellow-100">
-                        <h3 class="mb-0 fw-bold text-black-light">歡迎來到記帳卡片</h3>
+                    <div class="card-body d-flex flex-column align-items-center p-3">
+                        <h2 class="mb-0 text-title"><i class="bi-wallet2 me-2"></i>ACCOUNTING CARD</h2>
+                        <hr class="hr-card-body">
                     </div>
-                    <div class="card-body p-4">
-                        <form class="d-flex flex-column align-items-end" id="form-check">
-                            <input type="text" id="account" class="form-control col-12 mb-3" placeholder="請輸入帳號" v-model="user.account">
-                            <button type="button" class="btn btn-sm btn-secondary col-2" @click.prevent="postCheck">繼續</button>
+                    <div class="card-body px-5 pt-0">
+                        <form class="" id="form-check">
+                            <div class="d-flex align-items-center">
+                                <div class="col-1"><i class="bi-person me-2 icon-yellow-18"></i></div>
+                                <div class="col-1"></div>
+                                <div class="col-7">
+                                    <input type="text" id="account" class="form-control col-8" placeholder="請輸入帳號" v-model="user.account">
+                                </div>
+                                <div class="col-1"></div>
+                                <button type="button" class="btn btn-sm btn-secondary col-2 button-yellow" @click.prevent="postCheck">繼續</button>
+                            </div>
                         </form>
                         <form class="d-flex flex-column align-items-end display-none-form" id="form-register">
                             <label for="register" class="col-12">
@@ -77,6 +120,7 @@
 
 <script src="js/swal-alert.js"></script>
 <script src="js/hash-string.js"></script>
+<script src="js/all.js"></script>
 
 <script>
     const app = Vue.createApp({
@@ -98,12 +142,20 @@
             }
         },
         methods:{
-            postCheck: function () {
+            postCheck: async function () {
                 let vm = this;
+                
+                if (isNullOrEmpty(vm.user.account)) {
+                    $('#account').addClass('error-shake');
+                    await sleep(600);
+                    $('#account').removeClass('error-shake');
+                    return;
+                }
+
                 let data = {
                     Account: vm.user.account,
                 };
-                
+
                 axios({
                     method: 'post',
                     url: './api/User/Post/Session',
@@ -113,7 +165,7 @@
                     vm.user.register.key = res.data.salt
                     let step = res.data.step;
                     let account = res.data.account;
-                    switch (step){
+                    switch (step) {
                         case 0:
                             vm.user.register.account = account;
                             $('#form-check').addClass('display-none-form');
@@ -123,7 +175,7 @@
                             vm.user.login.account = account;
                             $('#form-check').addClass('display-none-form');
                             $('#form-login').removeClass('display-none-form');
-                            return;    
+                            return;
                     }
                     // alert_success(res.data, `嗨！${vm.user.login.account}，很高興看到你回來`);
                 }).catch(err => {
