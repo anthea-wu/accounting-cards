@@ -47,7 +47,10 @@ namespace accounting_cards.Controllers
                 }
                 else
                 {
-                    result.Step = 1;
+                    if (!string.IsNullOrEmpty(user.password))
+                    {
+                        result.Step = 1;
+                    }
                 }
                 
                 db.Dispose();
@@ -96,7 +99,7 @@ namespace accounting_cards.Controllers
                 if (user == null)
                 {
                     db.Dispose();
-                    return NotFound("登入失敗！帳號或密碼錯誤。");
+                    return BadRequest("登入失敗！帳號或密碼錯誤。");
                 }
 
                 var hashStr = $"salt={user.temp_key}+password={login.Password}";
