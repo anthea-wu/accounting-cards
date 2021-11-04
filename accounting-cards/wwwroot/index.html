@@ -75,31 +75,53 @@
                     <div class="card-body px-5 pt-0">
                         <form class="" id="form-check">
                             <div class="d-flex align-items-center">
-                                <div class="col-1"><i class="bi-person me-2 icon-yellow-18"></i></div>
+                                <div class="col-1"><i class="bi-person icon-yellow-18"></i></div>
                                 <div class="col-1"></div>
                                 <div class="col-7">
-                                    <input type="text" id="account" class="form-control col-8" placeholder="請輸入帳號" v-model="user.account">
+                                    <input type="text" id="account" class="form-control" placeholder="請輸入帳號" v-model="user.account">
                                 </div>
                                 <div class="col-1"></div>
                                 <button type="button" class="btn btn-sm btn-secondary col-2 button-yellow" @click.prevent="postCheck">繼續</button>
                             </div>
                         </form>
-                        <form class="d-flex flex-column align-items-end display-none-form" id="form-register">
+                        <form class="d-flex flex-column display-none-form" id="form-register">
                             <label for="register" class="col-12">
                                 <h5 class="mb-0"><span class="fw-bold">{{user.register.account}}</span>　是你想要使用的帳號嗎?</h5>
                                 <p class="form-text">帳號不存在，請確認輸入內容或利用 <span class="fw-bold">{{user.register.account}}</span> 來註冊一個新的帳號</p>
                             </label>
-                            <input type="text" id="register-password" class="form-control col-12 mb-3" placeholder="請輸入密碼" v-model="user.register.password">
-                            <input type="text" id="register-name" class="form-control col-12 mb-3" placeholder="請輸入暱稱" v-model="user.register.name">
-                            <button type="button" class="btn btn-sm btn-secondary col-2" @click.prevent="postRegister">註冊</button>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="col-1"><i class="bi-key icon-yellow-18"></i></div>
+                                <div class="col-1"></div>
+                                <div class="col-9">
+                                    <input type="text" id="register-password" class="form-control col-12" placeholder="請輸入密碼" v-model="user.register.password">
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="col-1"><i class="bi-person-badge icon-yellow-18"></i></div>
+                                <div class="col-1"></div>
+                                <div class="col-9">
+                                    <input type="text" id="register-name" class="form-control col-12" placeholder="請輸入暱稱" v-model="user.register.name">
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end">
+
+                                <button type="button" class="btn btn-sm btn-secondary col-2 float-end button-yellow" @click.prevent="postRegister">註冊</button>
+                            </div>
                         </form>
-                        <form class="d-flex flex-column align-items-end display-none-form" id="form-login">
+                        <form class="d-flex flex-column display-none-form" id="form-login">
                             <label for="login" class="col-12">
                                 <h5 class="mb-0"><span class="fw-bold">{{user.login.account}}</span>　歡迎回來！</h5>
                                 <p class="form-text">請繼續登入流程來使用功能</p>
                             </label>
-                            <input type="text" id="login-password" class="form-control col-12 mb-3" placeholder="請輸入密碼" v-model="user.login.password">
-                            <button type="button" class="btn btn-sm btn-secondary col-2" @click.prevent="postLogin">登入</button>
+                            <div class="d-flex align-items-center">
+                                <div class="col-1"><i class="bi-key icon-yellow-18"></i></div>
+                                <div class="col-1"></div>
+                                <div class="col-7">
+                                    <input type="text" id="login-password" class="form-control" placeholder="請輸入密碼" v-model="user.login.password">
+                                </div>
+                                <div class="col-1"></div>
+                                <button type="button" class="btn btn-sm btn-secondary col-2 button-yellow" @click.prevent="postLogin">登入</button>
+                            </div>
                         </form>
                     </div>
                 </div>
