@@ -10,11 +10,11 @@ namespace accounting_cards.Model
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            // optionsBuilder.UseSqlServer(
-            //     @"Data Source=EMCT-KING\SQLEXPRESS; Initial Catalog=accounting_card; User Id=sa; Password=emct;");
             optionsBuilder.UseSqlServer(
-                @"Persist Security Info=False;Integrated Security=true;  
-            Initial Catalog=accounting_card;Server=LAPTOP-EIP37RBS");
+                @"Data Source=EMCT-KING\SQLEXPRESS; Initial Catalog=accounting_card; User Id=sa; Password=emct;");
+            // optionsBuilder.UseSqlServer(
+            //     @"Persist Security Info=False;Integrated Security=true;  
+            // Initial Catalog=accounting_card;Server=LAPTOP-EIP37RBS");
         }
     }
 
