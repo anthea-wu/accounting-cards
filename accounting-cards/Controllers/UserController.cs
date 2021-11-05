@@ -51,6 +51,19 @@ namespace accounting_cards.Controllers
                     {
                         result.Step = 1;
                     }
+                    else
+                    {
+                        var bite = new byte[16];
+                        using (var rngCsp = new RNGCryptoServiceProvider())
+                        {
+                            rngCsp.GetBytes(bite);
+                        }
+                        var salt = Convert.ToBase64String(bite);
+                        user.temp_key = salt;
+                        db.SaveChanges();
+                    
+                        result.Salt = salt;
+                    }
                 }
                 
                 db.Dispose();

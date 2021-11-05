@@ -51,8 +51,9 @@
             width: 80%;
         }
         
-        .required{
-            border: 5px solid var(--yellow-600);
+        .error-required{
+            border: 3px solid var(--yellow-300);
+            opacity: 80%;
         }
         
         .error-shake{
@@ -138,7 +139,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://unpkg.com/vue@next"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
 <script src="js/swal-alert.js"></script>
 <script src="js/hash-string.js"></script>
@@ -168,6 +169,7 @@
                 let vm = this;
                 
                 if (isNullOrEmpty(vm.user.account)) {
+                    $('#account').addClass('error-required');
                     $('#account').addClass('error-shake');
                     await sleep(600);
                     $('#account').removeClass('error-shake');
@@ -183,7 +185,6 @@
                     url: './api/User/Post/Session',
                     data: data
                 }).then(res => {
-                    console.log(res.data);
                     vm.user.register.key = res.data.salt
                     let step = res.data.step;
                     let account = res.data.account;
@@ -199,20 +200,36 @@
                             $('#form-login').removeClass('display-none-form');
                             return;
                     }
-                    // alert_success(res.data, `嗨！${vm.user.login.account}，很高興看到你回來`);
                 }).catch(err => {
                     console.log(err.response);
                     // alert_fail(err.response.data, `嘿！${vm.user.login.account}，你可能記錯了帳號或密碼`)
                 })
             },
-            postRegister: function () {
+            postRegister: async function () {
                 let vm = this;
+
+                if (isNullOrEmpty(vm.user.register.password)) {
+                    $('#register-password').addClass('error-shake');
+                    $('#register-password').addClass('error-required');
+                    await sleep(600);
+                    $('#register-password').removeClass('error-shake');
+                    return;
+                }
+
+                if (isNullOrEmpty(vm.user.register.name)) {
+                    $('#register-name').addClass('error-shake');
+                    $('#register-name').addClass('error-required');
+                    await sleep(600);
+                    $('#register-name').removeClass('error-shake');
+                    return;
+                }
+
                 let data = {
                     Account: vm.user.register.account,
                     Password: toSHA256(vm.user.register.password, vm.user.register.key),
                     Name: vm.user.register.name
                 };
-                
+
                 axios({
                     method: 'post',
                     url: './api/User/Post/New',
@@ -227,7 +244,7 @@
                 let vm = this;
                 let data = {
                     Account: vm.user.login.account,
-                    Password: toSHA256(vm.user.login.password)
+                    Password: vm.user.login.password
                 };
 
                 axios({
