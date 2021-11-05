@@ -252,7 +252,8 @@
                     url: './api/User/Post',
                     data: data
                 }).then(res => {
-                    alert_success(res.data, `嗨！${vm.user.login.account}，很高興看到你回來`, false);
+                    alert_success("歡迎登入", `嗨！${vm.user.login.account}，很高興看到你回來`, false);
+                    localStorage.setItem("userInfo", JSON.stringify(res.data));
                 }).catch(err => {
                     alert_fail(err.response.data, `嘿！${vm.user.login.account}，你可能記錯了帳號或密碼`)
                 })

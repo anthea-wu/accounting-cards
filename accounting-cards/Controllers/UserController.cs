@@ -128,10 +128,23 @@ namespace accounting_cards.Controllers
                     return BadRequest("登入失敗！帳號或密碼錯誤。");
                 }
 
-                db.Dispose();
-                return Ok("歡迎登入");
+                var result = new UserLoginResponseBindingModel()
+                {
+                    Guid = user.guid,
+                    Name = user.name,
+                    Account = user.account
+                };
+                return Ok(result);
             }
+            
         }
+    }
+
+    public class UserLoginResponseBindingModel
+    {
+        public Guid Guid { get; set; }
+        public string Name { get; set; }
+        public string Account { get; set; }
     }
 
     public class UserCheckResponseBindingModel
