@@ -13,66 +13,25 @@ namespace accounting_cards.Controllers
     public class UserController : ControllerBase
     {
         private readonly AccountingContext _db;
+        private readonly IDbService _userService;
+        private ResultService _result;
 
-        public UserController(AccountingContext db)
+        public UserController(AccountingContext db, IDbService userService, ResultService result)
         {
             _db = db;
+            _userService = userService;
+            _result = result;
         }
 
         /// <summary> 帳號驗證 </summary>
         [Route("Post/Session")]
         [HttpPost]
-        public IActionResult Check(UserCheckRequestBindingModel check)
+        public IActionResult Check(UserCheckRequestBindingModel account)
         {
-            var result = new UserCheckResponseBindingModel()
-            {
-                Account = check.Account,
-                Step = 0
-            };
-            
-            var user = _db.Users.FirstOrDefault(u => u.account == check.Account);
-            if (user == null)
-            {
-                var bite = new byte[16];
-                using (var rngCsp = new RNGCryptoServiceProvider())
-                {
-                    rngCsp.GetBytes(bite);
-                }
-                var salt = Convert.ToBase64String(bite);
-                    
-                result.Salt = salt;
-                user = new User()
-                {
-                    guid = Guid.NewGuid(),
-                    account = check.Account,
-                    temp_key = salt
-                };
-                _db.Users.Add(user);
-                _db.SaveChanges();
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(user.password))
-                {
-                    result.Step = 1;
-                }
-                else
-                {
-                    var bite = new byte[16];
-                    using (var rngCsp = new RNGCryptoServiceProvider())
-                    {
-                        rngCsp.GetBytes(bite);
-                    }
-                    var salt = Convert.ToBase64String(bite);
-                    user.temp_key = salt;
-                    _db.SaveChanges();
-                    
-                    result.Salt = salt;
-                }
-            }
-                
-            _db.Dispose();
-            
+            var salt = GetSalt();
+            var user = _userService.GetExistOrCreateNew(account, salt);
+            var result = _result.Get(account, salt, user);
+
             return Ok(result);
         }
 
@@ -95,10 +54,10 @@ namespace accounting_cards.Controllers
             user.password = register.Password;
             user.name = register.Name;
             user.create_time = DateTimeOffset.Now;
-                
+
             _db.SaveChanges();
             _db.Dispose();
-            
+
             return CreatedAtAction(nameof(Register), register);
         }
 
@@ -134,39 +93,18 @@ namespace accounting_cards.Controllers
                 Account = user.account
             };
             return Ok(result);
-            
         }
-    }
 
-    public class UserLoginResponseBindingModel
-    {
-        public Guid Guid { get; set; }
-        public string Name { get; set; }
-        public string Account { get; set; }
-    }
+        private static string GetSalt()
+        {
+            var bite = new byte[16];
+            using (var rngCsp = new RNGCryptoServiceProvider())
+            {
+                rngCsp.GetBytes(bite);
+            }
 
-    public class UserCheckResponseBindingModel
-    {
-        public string Account { get; set; }
-        public int Step { get; set; }
-        public string Salt { get; set; }
-    }
-
-    public class UserCheckRequestBindingModel
-    {
-        public string Account { get; set; }
-    }
-
-    public class UserRegisterRequestBindingModel
-    {
-        public string Account { get; set; }
-        public string Password { get; set; }
-        public string Name { get; set; }
-    }
-
-    public class UserLoginRequestBindingModel
-    {
-        public string Account { get; set; }
-        public string Password { get; set; }
+            var salt = Convert.ToBase64String(bite);
+            return salt;
+        }
     }
 }
