@@ -12,6 +12,13 @@ namespace accounting_cards.Controllers
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
+        private readonly AccountingContext _db;
+
+        public UserController(AccountingContext db)
+        {
+            _db = db;
+        }
+
         /// <summary> 帳號驗證 </summary>
         [Route("Post/Session")]
         [HttpPost]
@@ -23,10 +30,33 @@ namespace accounting_cards.Controllers
                 Step = 0
             };
             
-            using (var db = new AccountingContext())
+            var user = _db.Users.FirstOrDefault(u => u.account == check.Account);
+            if (user == null)
             {
-                var user = db.Users.FirstOrDefault(u => u.account == check.Account);
-                if (user == null)
+                var bite = new byte[16];
+                using (var rngCsp = new RNGCryptoServiceProvider())
+                {
+                    rngCsp.GetBytes(bite);
+                }
+                var salt = Convert.ToBase64String(bite);
+                    
+                result.Salt = salt;
+                user = new User()
+                {
+                    guid = Guid.NewGuid(),
+                    account = check.Account,
+                    temp_key = salt
+                };
+                _db.Users.Add(user);
+                _db.SaveChanges();
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(user.password))
+                {
+                    result.Step = 1;
+                }
+                else
                 {
                     var bite = new byte[16];
                     using (var rngCsp = new RNGCryptoServiceProvider())
@@ -34,40 +64,14 @@ namespace accounting_cards.Controllers
                         rngCsp.GetBytes(bite);
                     }
                     var salt = Convert.ToBase64String(bite);
+                    user.temp_key = salt;
+                    _db.SaveChanges();
                     
                     result.Salt = salt;
-                    user = new User()
-                    {
-                        guid = Guid.NewGuid(),
-                        account = check.Account,
-                        temp_key = salt
-                    };
-                    db.Users.Add(user);
-                    db.SaveChanges();
                 }
-                else
-                {
-                    if (!string.IsNullOrEmpty(user.password))
-                    {
-                        result.Step = 1;
-                    }
-                    else
-                    {
-                        var bite = new byte[16];
-                        using (var rngCsp = new RNGCryptoServiceProvider())
-                        {
-                            rngCsp.GetBytes(bite);
-                        }
-                        var salt = Convert.ToBase64String(bite);
-                        user.temp_key = salt;
-                        db.SaveChanges();
-                    
-                        result.Salt = salt;
-                    }
-                }
-                
-                db.Dispose();
             }
+                
+            _db.Dispose();
             
             return Ok(result);
         }
@@ -80,23 +84,20 @@ namespace accounting_cards.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public IActionResult Register(UserRegisterRequestBindingModel register)
         {
-            using (var db = new AccountingContext())
+            var user = _db.Users.FirstOrDefault(u => u.account == register.Account);
+            if (user == null)
             {
-                var user = db.Users.FirstOrDefault(u => u.account == register.Account);
-                if (user == null)
-                {
-                    db.Dispose();
-                    return BadRequest($"帳號 {register.Account} 的註冊流程不合法");
-                }
-
-                user.account = register.Account;
-                user.password = register.Password;
-                user.name = register.Name;
-                user.create_time = DateTimeOffset.Now;
-                
-                db.SaveChanges();
-                db.Dispose();
+                _db.Dispose();
+                return BadRequest($"帳號 {register.Account} 的註冊流程不合法");
             }
+
+            user.account = register.Account;
+            user.password = register.Password;
+            user.name = register.Name;
+            user.create_time = DateTimeOffset.Now;
+                
+            _db.SaveChanges();
+            _db.Dispose();
             
             return CreatedAtAction(nameof(Register), register);
         }
@@ -106,36 +107,33 @@ namespace accounting_cards.Controllers
         [HttpPost]
         public IActionResult Login(UserLoginRequestBindingModel login)
         {
-            using (var db = new AccountingContext())
+            var user = _db.Users.FirstOrDefault(u => u.account == login.Account);
+            if (user == null)
             {
-                var user = db.Users.FirstOrDefault(u => u.account == login.Account);
-                if (user == null)
-                {
-                    db.Dispose();
-                    return BadRequest("登入失敗！帳號或密碼錯誤。");
-                }
-
-                var hashStr = $"salt={user.temp_key}+password={login.Password}";
-
-                var sha256 = SHA256.Create();
-                var originalBytes = UTF8Encoding.Default.GetBytes(hashStr);
-                var encodedBytes = sha256.ComputeHash(originalBytes);
-                var passwordHash = BitConverter.ToString(encodedBytes).Replace("-", "");
-
-                if (passwordHash != user.password)
-                {
-                    db.Dispose();
-                    return BadRequest("登入失敗！帳號或密碼錯誤。");
-                }
-
-                var result = new UserLoginResponseBindingModel()
-                {
-                    Guid = user.guid,
-                    Name = user.name,
-                    Account = user.account
-                };
-                return Ok(result);
+                _db.Dispose();
+                return BadRequest("登入失敗！帳號或密碼錯誤。");
             }
+
+            var hashStr = $"salt={user.temp_key}+password={login.Password}";
+
+            var sha256 = SHA256.Create();
+            var originalBytes = UTF8Encoding.Default.GetBytes(hashStr);
+            var encodedBytes = sha256.ComputeHash(originalBytes);
+            var passwordHash = BitConverter.ToString(encodedBytes).Replace("-", "");
+
+            if (passwordHash != user.password)
+            {
+                _db.Dispose();
+                return BadRequest("登入失敗！帳號或密碼錯誤。");
+            }
+
+            var result = new UserLoginResponseBindingModel()
+            {
+                Guid = user.guid,
+                Name = user.name,
+                Account = user.account
+            };
+            return Ok(result);
             
         }
     }
