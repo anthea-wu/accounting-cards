@@ -22,11 +22,10 @@ namespace accounting_cards.Controllers
                 {
                     guid = Guid.NewGuid(),
                     account = account.Account,
+                    temp_key = salt
                 };
                 _db.Users.Add(user);
             }
-
-            user.temp_key = salt;
             _db.SaveChanges();
             
             return user;
