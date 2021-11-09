@@ -31,7 +31,7 @@ namespace accounting_cards
         {
             services.AddControllers();
             services.AddScoped<IDbService, UserService>();
-            services.AddScoped<ResultService>();
+            services.AddScoped<IResultService, ResultService>();
 
             services.AddDbContext<AccountingContext>(options =>
                 options.UseSqlServer(

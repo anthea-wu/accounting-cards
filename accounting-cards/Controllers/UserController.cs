@@ -14,9 +14,9 @@ namespace accounting_cards.Controllers
     {
         private readonly AccountingContext _db;
         private readonly IDbService _userService;
-        private readonly ResultService _result;
+        private readonly IResultService _result;
 
-        public UserController(AccountingContext db, IDbService userService, ResultService result)
+        public UserController(AccountingContext db, IDbService userService, IResultService result)
         {
             _db = db;
             _userService = userService;

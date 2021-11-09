@@ -2,7 +2,7 @@
 
 namespace accounting_cards.Controllers
 {
-    public class ResultService
+    public class ResultService : IResultService
     {
         public UserCheckResponseBindingModel Get(UserCheckRequestBindingModel account, string salt, User? user)
         {
