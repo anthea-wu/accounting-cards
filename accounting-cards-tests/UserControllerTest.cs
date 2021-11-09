@@ -37,6 +37,35 @@ namespace accounting_cards_tests
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
+
+        [Test]
+        public void Return_Bad_Request_When_Account_Is_Null()
+        {
+            // Arrange
+            var account = new UserCheckRequestBindingModel();
+            
+            // Act
+            var result = _userController.Check(account);
+            
+            // Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
+
+        [Test]
+        public void Return_Bad_Request_When_Account_Is_Empty()
+        {
+            // Arrange
+            var account = new UserCheckRequestBindingModel()
+            {
+                Account = ""
+            };
+            
+            // Act
+            var result = _userController.Check(account);
+            
+            // Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
         
     }
 

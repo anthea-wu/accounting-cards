@@ -3,7 +3,9 @@
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=619D7051_002D34F1_002D45AC_002DADE7_002DD72575E247CB_002Ff_003AStartup_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=b1111ccd_002D469a_002D48a0_002D8dd6_002D3170a5c91798/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Test1" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::A41AF40F-986E-40B2-A90C-06A3A1CB1E09::net5.0::accounting_cards_tests.UserControllerTest.Return_Step_One_When_Account_Is_Exist&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::A41AF40F-986E-40B2-A90C-06A3A1CB1E09::net5.0::accounting_cards_tests.UserControllerTest.Return_Ok_Response_When_Account_Is_Not_Null_Or_Empty&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::A41AF40F-986E-40B2-A90C-06A3A1CB1E09::net5.0::accounting_cards_tests.UserControllerTest.Return_Bad_Request_When_Account_Is_Null&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::A41AF40F-986E-40B2-A90C-06A3A1CB1E09::net5.0::accounting_cards_tests.UserControllerTest.Return_Bad_Request_When_Account_Is_Empty&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	</wpf:ResourceDictionary>
