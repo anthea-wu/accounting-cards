@@ -25,74 +25,49 @@ namespace accounting_cards_tests
         [Test]
         public void Return_Ok_Response_When_Account_Is_Not_Null_Or_Empty()
         {
-            // Arrange
-            var account = new UserCheckRequestBindingModel()
-            {
-                Account = "unit-test-test"
-            };
-            
-            // Act
-            var result = _userController.Check(account);
-
-            // Assert
-            Assert.IsInstanceOf<OkObjectResult>(result);
+            var account = CreateNewAccount("unit-test-test");
+            var result = ApiPostSession(account);
+            ResultEqualsToOkObjectResult(result);
         }
 
         [Test]
         public void Return_Bad_Request_When_Account_Is_Null()
         {
-            // Arrange
             var account = new UserCheckRequestBindingModel();
-            
-            // Act
-            var result = _userController.Check(account);
-            
-            // Assert
-            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            var result = ApiPostSession(account);
+            ResultEqualsToBadRequestObjectResult(result);
         }
 
         [Test]
         public void Return_Bad_Request_When_Account_Is_Empty()
         {
-            // Arrange
-            var account = new UserCheckRequestBindingModel()
+            var account = CreateNewAccount("");
+            var result = ApiPostSession(account);
+            ResultEqualsToBadRequestObjectResult(result);
+        }
+
+        private static UserCheckRequestBindingModel CreateNewAccount(string account)
+        {
+            var result = new UserCheckRequestBindingModel()
             {
-                Account = ""
+                Account = account
             };
-            
-            // Act
-            var result = _userController.Check(account);
-            
-            // Assert
+            return result;
+        }
+
+        private IActionResult ApiPostSession(UserCheckRequestBindingModel account)
+        {
+            return _userController.Check(account);
+        }
+
+        private static void ResultEqualsToOkObjectResult(IActionResult result)
+        {
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        private static void ResultEqualsToBadRequestObjectResult(IActionResult result)
+        {
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
-        
     }
-
-    class ResultTestService : IResultService
-    {
-        public UserCheckResponseBindingModel Get(UserCheckRequestBindingModel account, string salt, User? user)
-        {
-            return new UserCheckResponseBindingModel()
-            {
-                Account = account.Account,
-                Step = 0,
-                Salt = ""
-            };
-        }
-    }
-
-    class UserTestService : IDbService
-    {
-        public User? GetExistOrCreateNew(UserCheckRequestBindingModel account, string salt)
-        {
-            return new User()
-            {
-                account = account.Account,
-                temp_key = salt
-            };
-        }
-    } 
-    
-    
 }
