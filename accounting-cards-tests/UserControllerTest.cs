@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using accounting_cards.Controllers;
 using accounting_cards.Model;
 using Microsoft.AspNetCore.Mvc;
@@ -19,15 +20,16 @@ namespace accounting_cards_tests
             return new AccountingContext(options);
         }
         private static readonly AccountingContext _db = GetDbContext();
-        private static readonly UserTestService _userService = new UserTestService();
-
-        private readonly UserController _userController = new(_db, _userService, new ResultService());
+        private readonly UserController _userController = new(_db, new UserTestService(), new ResultService());
 
         [Test]
         public void Return_Step_Zero_When_Account_Is_New()
         {
             // Arrange
-            var account = new UserCheckRequestBindingModel();
+            var account = new UserCheckRequestBindingModel()
+            {
+                Account = "unit-test-test"
+            };
             
             // Act
             var okResult = _userController.Check(account) as OkObjectResult;
@@ -41,17 +43,10 @@ namespace accounting_cards_tests
         public void Return_Step_One_When_Account_Is_Exist()
         {
             // Arrange
-            var data = new User()
-            {
-                guid = Guid.NewGuid(),
-                account = "unit-test-test",
-            };
-            _db.Users.Add(data);
-            _db.SaveChanges();
-            
             var account = new UserCheckRequestBindingModel()
             {
-                Account = "unit-test-test"
+                Account = "unit-test-test",
+                Password = "123"
             };
             
             // Act
@@ -68,20 +63,14 @@ namespace accounting_cards_tests
     {
         public User? GetExistOrCreateNew(UserCheckRequestBindingModel account, string salt)
         {
-            if (string.Equals(account.Account, "unit-test-test"))
-            {
-                return new User()
-                {
-                    account = account.Account,
-                    password = "123",
-                    temp_key = salt
-                };
-            }
             return new User()
             {
                 account = account.Account,
+                password = account.Password,
                 temp_key = salt
             };
         }
     } 
+    
+    
 }

@@ -19,6 +19,7 @@ namespace accounting_cards.Model
     public class UserCheckRequestBindingModel
     {
         public string Account { get; set; }
+        public string Password { get; set; }
     }
 
     public class UserRegisterRequestBindingModel
