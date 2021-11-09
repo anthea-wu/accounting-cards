@@ -20,10 +20,10 @@ namespace accounting_cards_tests
             return new AccountingContext(options);
         }
         private static readonly AccountingContext _db = GetDbContext();
-        private readonly UserController _userController = new(_db, new UserTestService(), new ResultService());
+        private readonly UserController _userController = new(_db, new UserTestService(), new ResultTestService());
 
         [Test]
-        public void Return_Step_Zero_When_Account_Is_New()
+        public void Return_Ok_Response_When_Account_Is_Not_Null_Or_Empty()
         {
             // Arrange
             var account = new UserCheckRequestBindingModel()
@@ -32,31 +32,25 @@ namespace accounting_cards_tests
             };
             
             // Act
-            var okResult = _userController.Check(account) as OkObjectResult;
-            var result = okResult.Value as UserCheckResponseBindingModel;
+            var result = _userController.Check(account);
 
             // Assert
-            Assert.AreEqual(0, result.Step);
-        }
-
-        [Test]
-        public void Return_Step_One_When_Account_Is_Exist()
-        {
-            // Arrange
-            var account = new UserCheckRequestBindingModel()
-            {
-                Account = "unit-test-test",
-                Password = "123"
-            };
-            
-            // Act
-            var okResult = _userController.Check(account) as OkObjectResult;
-            var result = okResult.Value as UserCheckResponseBindingModel;
-            
-            // Assert
-            Assert.AreEqual(1, result.Step);
+            Assert.IsInstanceOf<OkObjectResult>(result);
         }
         
+    }
+
+    class ResultTestService : IResultService
+    {
+        public UserCheckResponseBindingModel Get(UserCheckRequestBindingModel account, string salt, User? user)
+        {
+            return new UserCheckResponseBindingModel()
+            {
+                Account = account.Account,
+                Step = 0,
+                Salt = ""
+            };
+        }
     }
 
     class UserTestService : IDbService
@@ -66,7 +60,6 @@ namespace accounting_cards_tests
             return new User()
             {
                 account = account.Account,
-                password = account.Password,
                 temp_key = salt
             };
         }

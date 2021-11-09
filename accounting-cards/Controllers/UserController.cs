@@ -28,6 +28,11 @@ namespace accounting_cards.Controllers
         [HttpPost]
         public IActionResult Check(UserCheckRequestBindingModel account)
         {
+            if (string.IsNullOrEmpty(account.Account))
+            {
+                return BadRequest("請填入帳號。");
+            }
+            
             var salt = GetSalt();
             var user = _userService.GetExistOrCreateNew(account, salt);
             var result = _result.Get(account, salt, user);
