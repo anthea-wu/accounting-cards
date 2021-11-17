@@ -34,7 +34,7 @@
 
             axios({
                 method: 'post',
-                url: './api/User/Post/Session',
+                url: './api/user/session',
                 data: data
             }).then(res => {
                 vm.user.register.key = res.data.salt
@@ -84,7 +84,7 @@
 
             axios({
                 method: 'post',
-                url: './api/User/Post/New',
+                url: './api/user/new',
                 data: data
             }).then(res => {
                 alert_success('註冊成功', '感謝你的註冊！重新整理回到登入頁面號馬上開始使用吧', true);
@@ -101,7 +101,7 @@
 
             axios({
                 method: 'post',
-                url: './api/User/Post',
+                url: './api/user',
                 data: data
             }).then(res => {
                 alert_success("歡迎登入", `嗨！${vm.user.login.account}，很高興看到你回來`, false);

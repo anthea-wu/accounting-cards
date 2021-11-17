@@ -24,7 +24,7 @@ namespace accounting_cards.Controllers
         }
 
         /// <summary> 帳號驗證 </summary>
-        [Route("Post/Session")]
+        [Route("session")]
         [HttpPost]
         public IActionResult Check(UserCheckRequestBindingModel account)
         {
@@ -42,7 +42,7 @@ namespace accounting_cards.Controllers
 
 
         /// <summary> 註冊 </summary>
-        [Route("Post/New")]
+        [Route("new")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -67,7 +67,7 @@ namespace accounting_cards.Controllers
         }
 
         /// <summary> 登入 </summary>
-        [Route("Post")]
+        [Route("")]
         [HttpPost]
         public IActionResult Login(UserLoginRequestBindingModel login)
         {
